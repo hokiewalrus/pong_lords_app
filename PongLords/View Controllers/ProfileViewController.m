@@ -7,12 +7,15 @@
 //
 
 #import "ProfileViewController.h"
+#import "LoginViewController.h"
 
 @interface ProfileViewController ()
 
 @end
 
 @implementation ProfileViewController
+
+#pragma mark - Init Methods
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     
@@ -23,16 +26,32 @@
     return self;
 }
 
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    
+    [super viewDidAppear:animated];
+    [self checkAndLoadModal];
 }
 
 - (void)didReceiveMemoryWarning {
     
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Private Methods
+
+- (void)checkAndLoadModal {
+    
+    LoginViewController *login = [[LoginViewController alloc] init];
+    [login setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
+    [self presentViewController:login animated:YES completion:nil];
 }
 
 @end

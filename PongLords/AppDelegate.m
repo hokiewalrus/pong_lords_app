@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "ProfileViewController.h"
 
 @implementation AppDelegate
 
@@ -16,6 +17,12 @@
 
     [Crashlytics startWithAPIKey:@"33a7a0d865f1f5ad096f48493e2916bd878e2ec6"];
     
+    UITabBarController *tabBar = [[UITabBarController alloc] init];
+    ProfileViewController *firstVC = [[ProfileViewController alloc] init];
+    UINavigationController *firstNav = [[UINavigationController alloc] initWithRootViewController:firstVC];
+    [tabBar setViewControllers:@[firstNav]];
+    
+    [self.window setRootViewController:tabBar];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
