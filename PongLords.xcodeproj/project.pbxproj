@@ -25,6 +25,8 @@
 		0564F03B17F3873A005956A3 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0564F03A17F3873A005956A3 /* LoginViewController.m */; };
 		0564F03F17F3881F005956A3 /* LoginView~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0564F03E17F3881F005956A3 /* LoginView~iphone.xib */; };
 		0571EB7D17D83404003994A7 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0571EB7C17D83404003994A7 /* Crashlytics.framework */; };
+		05FD498617F4AC1F00CB4A6A /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FD498517F4AC1F00CB4A6A /* GameViewController.m */; };
+		05FD498917F4AC3B00CB4A6A /* TournamentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FD498817F4AC3B00CB4A6A /* TournamentViewController.m */; };
 		17DED94E063B4BDCB45DC78B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B284583A2824157B0E0DAD0 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +68,10 @@
 		0564F03E17F3881F005956A3 /* LoginView~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "LoginView~iphone.xib"; sourceTree = "<group>"; };
 		0571EB7C17D83404003994A7 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		05A298EA77724FA5BAA50E93 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
+		05FD498417F4AC1F00CB4A6A /* GameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		05FD498517F4AC1F00CB4A6A /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		05FD498717F4AC3B00CB4A6A /* TournamentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TournamentViewController.h; sourceTree = "<group>"; };
+		05FD498817F4AC3B00CB4A6A /* TournamentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TournamentViewController.m; sourceTree = "<group>"; };
 		0B284583A2824157B0E0DAD0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -110,6 +116,10 @@
 				0501280617D6DA9600182923 /* ProfileViewController.m */,
 				0564F03917F3873A005956A3 /* LoginViewController.h */,
 				0564F03A17F3873A005956A3 /* LoginViewController.m */,
+				05FD498417F4AC1F00CB4A6A /* GameViewController.h */,
+				05FD498517F4AC1F00CB4A6A /* GameViewController.m */,
+				05FD498717F4AC3B00CB4A6A /* TournamentViewController.h */,
+				05FD498817F4AC3B00CB4A6A /* TournamentViewController.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -350,7 +360,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0501280417D6D85200182923 /* PongLordsAPIClient.m in Sources */,
+				05FD498917F4AC3B00CB4A6A /* TournamentViewController.m in Sources */,
 				0527C1D017D6CC64007ABA3F /* AppDelegate.m in Sources */,
+				05FD498617F4AC1F00CB4A6A /* GameViewController.m in Sources */,
 				0564F03B17F3873A005956A3 /* LoginViewController.m in Sources */,
 				0527C1CC17D6CC64007ABA3F /* main.m in Sources */,
 				0501280117D6D55000182923 /* Constants.m in Sources */,

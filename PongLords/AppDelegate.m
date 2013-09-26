@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "ProfileViewController.h"
+#import "GameViewController.h"
+#import "TournamentViewController.h"
 
 @implementation AppDelegate
 
@@ -20,7 +22,14 @@
     UITabBarController *tabBar = [[UITabBarController alloc] init];
     ProfileViewController *firstVC = [[ProfileViewController alloc] init];
     UINavigationController *firstNav = [[UINavigationController alloc] initWithRootViewController:firstVC];
-    [tabBar setViewControllers:@[firstNav]];
+    GameViewController *secondVC = [[GameViewController alloc] init];
+    UINavigationController *secondNav = [[UINavigationController alloc] initWithRootViewController:secondVC];
+    TournamentViewController *thirdVC = [[TournamentViewController alloc] init];
+    UINavigationController *thirdNav = [[UINavigationController alloc] initWithRootViewController:thirdVC];
+    [tabBar setViewControllers:@[firstNav, secondNav, thirdNav]];
+    
+    [self.window setTintColor:[UIColor colorWithRed:0.937 green:0.282 blue:0.224 alpha:1.000]];
+    [[UITabBar appearance] setBackgroundImage:[UIImage imageNamed:@"TabBarBG"]];
     
     [self.window setRootViewController:tabBar];
     self.window.backgroundColor = [UIColor whiteColor];

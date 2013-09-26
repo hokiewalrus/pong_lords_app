@@ -21,7 +21,8 @@
     
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        [self.tabBarItem setImage:[UIImage imageNamed:@"IconProfile"]];
+        [self.tabBarItem setTitle:NSLocalizedString(@"Profile", nil)];
     }
     return self;
 }
@@ -36,7 +37,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
-    [self checkAndLoadModal];
+    // [self checkAndLoadModal];
 }
 
 - (void)didReceiveMemoryWarning {
