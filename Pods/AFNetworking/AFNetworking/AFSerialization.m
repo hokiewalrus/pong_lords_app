@@ -1,5 +1,5 @@
-// AFSerialization.h
-//
+// AFSerialization.m
+// 
 // Copyright (c) 2013 AFNetworking (http://afnetworking.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,16 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFURLResponseSerialization.h"
-
-extern NSString * const AFNetworkingErrorDomain;
-extern NSString * const AFNetworkingOperationFailingURLResponseErrorKey;
+#import "AFSerialization.h"
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 #import <UIKit/UIKit.h>
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #import <Cocoa/Cocoa.h>
 #endif
+
+#import "AFHTTPRequestOperation.h"
+
+typedef NSString * (^AFQueryStringSerializationBlock)(NSURLRequest *request, NSDictionary *parameters, NSError *__autoreleasing *error);
 
 static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     NSMutableString *string = [NSMutableString string];
@@ -61,7 +62,58 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     return string;
 }
 
-@implementation AFHTTPResponseSerializer
+#pragma mark -
+
+extern NSArray * AFQueryStringPairsFromDictionary(NSDictionary *dictionary);
+extern NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value);
+
+static NSString * AFQueryStringFromParameters(NSDictionary *parameters) {
+    return [AFQueryStringPairsFromDictionary(parameters) componentsJoinedByString:@"&"];
+}
+
+NSArray * AFQueryStringPairsFromDictionary(NSDictionary *dictionary) {
+    return AFQueryStringPairsFromKeyAndValue(nil, dictionary);
+}
+
+NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
+    NSMutableArray *mutableQueryStringComponents = [NSMutableArray array];
+
+    if ([value isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dictionary = value;
+        // Sort dictionary keys to ensure consistent ordering in query string, which is important when deserializing potentially ambiguous sequences, such as an array of dictionaries
+        NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"description" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+        for (id nestedKey in [dictionary.allKeys sortedArrayUsingDescriptors:@[ sortDescriptor ]]) {
+            id nestedValue = [dictionary objectForKey:nestedKey];
+            if (nestedValue) {
+                [mutableQueryStringComponents addObjectsFromArray:AFQueryStringPairsFromKeyAndValue((key ? [NSString stringWithFormat:@"%@[%@]", key, nestedKey] : nestedKey), nestedValue)];
+            }
+        }
+    } else if ([value isKindOfClass:[NSArray class]]) {
+        NSArray *array = value;
+        for (id nestedValue in array) {
+            [mutableQueryStringComponents addObjectsFromArray:AFQueryStringPairsFromKeyAndValue([NSString stringWithFormat:@"%@[]", key], nestedValue)];
+        }
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        NSSet *set = value;
+        for (id obj in set) {
+            [mutableQueryStringComponents addObjectsFromArray:AFQueryStringPairsFromKeyAndValue(key, obj)];
+        }
+    } else {
+        [mutableQueryStringComponents addObject:[NSString stringWithFormat:@"%@=%@", key, value]];
+    }
+
+    return mutableQueryStringComponents;
+}
+
+#pragma mark -
+
+@interface AFHTTPSerializer ()
+@property (readwrite, nonatomic, strong) NSMutableDictionary *mutableHTTPRequestHeaders;
+@property (readwrite, nonatomic, assign) AFHTTPRequestQueryStringSerializationStyle queryStringSerializationStyle;
+@property (readwrite, nonatomic, copy) AFQueryStringSerializationBlock queryStringSerialization;
+@end
+
+@implementation AFHTTPSerializer
 
 + (instancetype)serializer {
     return [[self alloc] init];
@@ -75,10 +127,77 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
     self.stringEncoding = NSUTF8StringEncoding;
 
+    self.mutableHTTPRequestHeaders = [NSMutableDictionary dictionary];
+
+    // Accept-Language HTTP Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+    NSMutableArray *acceptLanguagesComponents = [NSMutableArray array];
+    [[NSLocale preferredLanguages] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        float q = 1.0f - (idx * 0.1f);
+        [acceptLanguagesComponents addObject:[NSString stringWithFormat:@"%@;q=%0.1g", obj, q]];
+        *stop = q <= 0.5f;
+    }];
+    [self setValue:[acceptLanguagesComponents componentsJoinedByString:@", "] forHTTPHeaderField:@"Accept-Language"];
+
+    NSString *userAgent = nil;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu"
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+    // User-Agent Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43
+    userAgent = [NSString stringWithFormat:@"%@/%@ (%@; iOS %@; Scale/%0.2f)", [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleExecutableKey] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleIdentifierKey], (__bridge id)CFBundleGetValueForInfoDictionaryKey(CFBundleGetMainBundle(), kCFBundleVersionKey) ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleVersionKey], [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] ? [[UIScreen mainScreen] scale] : 1.0f)];
+#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+    userAgent = [NSString stringWithFormat:@"%@/%@ (Mac OS X %@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleExecutableKey] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleIdentifierKey], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(__bridge NSString *)kCFBundleVersionKey], [[NSProcessInfo processInfo] operatingSystemVersionString]];
+#endif
+#pragma clang diagnostic pop
+    if (userAgent) {
+        if (![userAgent canBeConvertedToEncoding:NSASCIIStringEncoding]) {
+            NSMutableString *mutableUserAgent = [userAgent mutableCopy];
+            CFStringTransform((__bridge CFMutableStringRef)(mutableUserAgent), NULL, kCFStringTransformToLatin, false);
+            userAgent = mutableUserAgent;
+        }
+        [self setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+    }
+
     self.acceptableStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(200, 100)];
     self.acceptableContentTypes = nil;
 
+    // HTTP Method Definitions; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+    self.HTTPMethodsEncodingParametersInURI = [NSSet setWithObjects:@"GET", @"HEAD", @"DELETE", nil];
+
     return self;
+}
+
+#pragma mark -
+
+- (NSDictionary *)HTTPRequestHeaders {
+    return [NSDictionary dictionaryWithDictionary:self.mutableHTTPRequestHeaders];
+}
+
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field {
+	[self.mutableHTTPRequestHeaders setValue:value forKey:field];
+}
+
+- (void)setAuthorizationHeaderFieldWithUsername:(NSString *)username password:(NSString *)password {
+	NSString *basicAuthCredentials = [NSString stringWithFormat:@"%@:%@", username, password];
+    [self setValue:[NSString stringWithFormat:@"Basic %@", [[basicAuthCredentials dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0]] forHTTPHeaderField:@"Authorization"];
+}
+
+- (void)setAuthorizationHeaderFieldWithToken:(NSString *)token {
+    [self setValue:[NSString stringWithFormat:@"Token token=\"%@\"", token] forHTTPHeaderField:@"Authorization"];
+}
+
+- (void)clearAuthorizationHeader {
+	[self.mutableHTTPRequestHeaders removeObjectForKey:@"Authorization"];
+}
+
+#pragma mark -
+
+- (void)setQueryStringSerializationWithStyle:(AFHTTPRequestQueryStringSerializationStyle)style {
+    self.queryStringSerializationStyle = style;
+    self.queryStringSerialization = nil;
+}
+
+- (void)setQueryStringSerializationWithBlock:(NSString *(^)(NSURLRequest *, NSDictionary *, NSError *__autoreleasing *))block {
+    self.queryStringSerialization = block;
 }
 
 #pragma mark -
@@ -116,8 +235,55 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
             }
         }
     }
-
+    
     return YES;
+}
+
+#pragma mark - AFURLRequestSerialization
+
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(NSDictionary *)parameters
+                                        error:(NSError *__autoreleasing *)error
+{
+    NSParameterAssert(request);
+
+
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+
+    [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *stop) {
+        [mutableRequest setValue:value forHTTPHeaderField:field];
+    }];
+    
+    
+    if (!parameters) {
+        return mutableRequest;
+    }
+
+    NSString *query = nil;
+    if (self.queryStringSerialization) {
+        query = self.queryStringSerialization(request, parameters, error);
+    } else {
+        switch (self.queryStringSerializationStyle) {
+            case AFHTTPRequestQueryStringDefaultStyle:
+                query = AFQueryStringFromParameters(parameters);
+                break;
+            default:
+                break;
+        }
+    }
+
+    if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
+        NSURLComponents *components = [NSURLComponents componentsWithString:[[request URL] absoluteString]];
+        components.query = components.query ? [components.query stringByAppendingFormat:@"&%@", query] : query;
+
+        mutableRequest.URL = [components URL];
+    } else {
+        NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.stringEncoding));
+        [mutableRequest setValue:[NSString stringWithFormat:@"application/x-www-form-urlencoded; charset=%@", charset] forHTTPHeaderField:@"Content-Type"];
+        [mutableRequest setHTTPBody:[query dataUsingEncoding:self.stringEncoding]];
+    }
+
+    return mutableRequest;
 }
 
 #pragma mark - AFURLResponseSerialization
@@ -129,7 +295,7 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
         return nil;
     }
-
+    
     return data;
 }
 
@@ -141,24 +307,25 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
         return nil;
     }
 
-    self.acceptableStatusCodes = [aDecoder decodeObjectForKey:@"acceptableStatusCodes"];
-    self.acceptableContentTypes = [aDecoder decodeObjectForKey:@"acceptableContentTypes"];
+    self.mutableHTTPRequestHeaders = [aDecoder decodeObjectForKey:@"mutableHTTPRequestHeaders"];
+    self.queryStringSerializationStyle = [aDecoder decodeIntegerForKey:@"queryStringSerializationStyle"];
 
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:self.acceptableStatusCodes forKey:@"acceptableStatusCodes"];
-    [aCoder encodeInteger:self.acceptableContentTypes forKey:@"acceptableContentTypes"];
+    [aCoder encodeObject:self.mutableHTTPRequestHeaders forKey:@"mutableHTTPRequestHeaders"];
+    [aCoder encodeInteger:self.queryStringSerializationStyle forKey:@"queryStringSerializationStyle"];
 }
 
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFHTTPResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
-    serializer.acceptableStatusCodes = [self.acceptableStatusCodes copyWithZone:zone];
-    serializer.acceptableContentTypes = [self.acceptableContentTypes copyWithZone:zone];
-
+    AFHTTPSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    serializer.mutableHTTPRequestHeaders = [self.mutableHTTPRequestHeaders mutableCopyWithZone:zone];
+    serializer.queryStringSerializationStyle = self.queryStringSerializationStyle;
+    serializer.queryStringSerialization = self.queryStringSerialization;
+    
     return serializer;
 }
 
@@ -166,15 +333,18 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
 #pragma mark -
 
-@implementation AFJSONResponseSerializer
+@implementation AFJSONSerializer
 
 + (instancetype)serializer {
-    return [self serializerWithReadingOptions:0];
+    return [self serializerWithReadingOptions:0 writingOptions:0];
 }
 
-+ (instancetype)serializerWithReadingOptions:(NSJSONReadingOptions)readingOptions {
-    AFJSONResponseSerializer *serializer = [[self alloc] init];
++ (instancetype)serializerWithReadingOptions:(NSJSONReadingOptions)readingOptions
+                              writingOptions:(NSJSONWritingOptions)writingOptions
+{
+    AFJSONSerializer *serializer = [[self alloc] init];
     serializer.readingOptions = readingOptions;
+    serializer.writingOptions = writingOptions;
 
     return serializer;
 }
@@ -190,7 +360,34 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     return self;
 }
 
+#pragma mark - AFURLRequestSerialization
 
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(NSDictionary *)parameters
+                                        error:(NSError *__autoreleasing *)error
+{
+    NSParameterAssert(request);
+
+    if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
+        return [super requestBySerializingRequest:request withParameters:parameters error:error];
+    }
+
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+
+    [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *stop) {
+        [mutableRequest setValue:value forHTTPHeaderField:field];
+    }];
+
+    NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+
+    [mutableRequest setValue:[NSString stringWithFormat:@"application/json; charset=%@", charset] forHTTPHeaderField:@"Content-Type"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wassign-enum"
+    [mutableRequest setHTTPBody:[NSJSONSerialization dataWithJSONObject:parameters options:self.writingOptions error:error]];
+#pragma clang diagnostic pop
+
+    return mutableRequest;
+}
 
 #pragma mark - AFURLRequestSerialization
 
@@ -211,11 +408,7 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
         data = [responseString dataUsingEncoding:NSUTF8StringEncoding];
 
         if (data) {
-            if ([data length] > 0) {
-                return [NSJSONSerialization JSONObjectWithData:data options:self.readingOptions error:error];
-            } else {
-                return nil;
-            }
+            return [NSJSONSerialization JSONObjectWithData:data options:self.readingOptions error:error];
         } else {
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
             [userInfo setValue:NSLocalizedStringFromTable(@"Data failed decoding as a UTF-8 string", nil, @"AFNetworking") forKey:NSLocalizedDescriptionKey];
@@ -238,21 +431,24 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     }
 
     self.readingOptions = [aDecoder decodeIntegerForKey:@"readingOptions"];
+    self.writingOptions = [aDecoder decodeIntegerForKey:@"writingOptions"];
 
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [super encodeWithCoder:aCoder];
-
+    
     [aCoder encodeInteger:self.readingOptions forKey:@"readingOptions"];
+    [aCoder encodeInteger:self.writingOptions forKey:@"writingOptions"];
 }
 
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFJSONResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    AFJSONSerializer *serializer = [[[self class] allocWithZone:zone] init];
     serializer.readingOptions = self.readingOptions;
+    serializer.writingOptions = self.writingOptions;
 
     return serializer;
 }
@@ -261,10 +457,10 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
 #pragma mark -
 
-@implementation AFXMLParserResponseSerializer
+@implementation AFXMLParserSerializer
 
 + (instancetype)serializer {
-    AFXMLParserResponseSerializer *serializer = [[self alloc] init];
+    AFXMLParserSerializer *serializer = [[self alloc] init];
 
     return serializer;
 }
@@ -295,16 +491,16 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
-@implementation AFXMLDocumentResponseSerializer
+@implementation AFXMLDocumentSerializer
 
 + (instancetype)serializer {
     return [self serializerWithXMLDocumentOptions:0];
 }
 
 + (instancetype)serializerWithXMLDocumentOptions:(NSUInteger)mask {
-    AFXMLDocumentResponseSerializer *serializer = [[self alloc] init];
+    AFXMLDocumentSerializer *serializer = [[self alloc] init];
     serializer.options = mask;
-
+    
     return serializer;
 }
 
@@ -354,7 +550,7 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFXMLDocumentResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    AFXMLDocumentSerializer *serializer = [[[self class] allocWithZone:zone] init];
     serializer.options = self.options;
 
     return serializer;
@@ -366,18 +562,20 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
 #pragma mark -
 
-@implementation AFPropertyListResponseSerializer
+@implementation AFPropertyListSerializer
 
 + (instancetype)serializer {
-    return [self serializerWithFormat:NSPropertyListXMLFormat_v1_0 readOptions:0];
+    return [self serializerWithFormat:NSPropertyListXMLFormat_v1_0 readOptions:0 writeOptions:0];
 }
 
 + (instancetype)serializerWithFormat:(NSPropertyListFormat)format
                          readOptions:(NSPropertyListReadOptions)readOptions
+                        writeOptions:(NSPropertyListWriteOptions)writeOptions
 {
-    AFPropertyListResponseSerializer *serializer = [[self alloc] init];
+    AFPropertyListSerializer *serializer = [[self alloc] init];
     serializer.format = format;
     serializer.readOptions = readOptions;
+    serializer.writeOptions = writeOptions;
 
     return serializer;
 }
@@ -403,6 +601,32 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
     return _acceptablePathExtension;
 }
 
+#pragma mark - AFURLRequestSerializer
+
+- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(NSDictionary *)parameters
+                                        error:(NSError *__autoreleasing *)error
+{
+    NSParameterAssert(request);
+
+    if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
+        return [super requestBySerializingRequest:request withParameters:parameters error:error];
+    }
+
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+
+    [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL *stop) {
+        [mutableRequest setValue:value forHTTPHeaderField:field];
+    }];
+
+    NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+
+    [mutableRequest setValue:[NSString stringWithFormat:@"application/x-plist; charset=%@", charset] forHTTPHeaderField:@"Content-Type"];
+    [mutableRequest setHTTPBody:[NSPropertyListSerialization dataWithPropertyList:parameters format:self.format options:self.writeOptions error:error]];
+
+    return mutableRequest;
+}
+
 #pragma mark - AFURLResponseSerialization
 
 - (id)responseObjectForResponse:(NSURLResponse *)response
@@ -426,23 +650,26 @@ static NSString * AFStringFromIndexSet(NSIndexSet *indexSet) {
 
     self.format = [aDecoder decodeIntegerForKey:@"format"];
     self.readOptions = [aDecoder decodeIntegerForKey:@"readOptions"];
+    self.writeOptions = [aDecoder decodeIntegerForKey:@"writeOptions"];
 
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [super encodeWithCoder:aCoder];
-
+    
     [aCoder encodeInteger:self.format forKey:@"format"];
     [aCoder encodeInteger:self.readOptions forKey:@"readOptions"];
+    [aCoder encodeInteger:self.writeOptions forKey:@"writeOptions"];
 }
 
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFPropertyListResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    AFPropertyListSerializer *serializer = [[[self class] allocWithZone:zone] init];
     serializer.format = self.format;
     serializer.readOptions = self.readOptions;
+    serializer.writeOptions = self.writeOptions;
 
     return serializer;
 }
@@ -499,7 +726,7 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
 
     if (width * height > 1024 * 1024) {
         CGImageRelease(imageRef);
-
+        
         return AFImageWithDataAtScale(data, scale);
     }
 
@@ -509,7 +736,7 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
     CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(imageRef);
 
     if (CGColorSpaceGetNumberOfComponents(colorSpace) == 3) {
-        uint32_t alpha = (bitmapInfo & kCGBitmapAlphaInfoMask);
+        int alpha = (bitmapInfo & kCGBitmapAlphaInfoMask);
         if (alpha == kCGImageAlphaNone) {
             bitmapInfo &= ~kCGBitmapAlphaInfoMask;
             bitmapInfo |= kCGImageAlphaNoneSkipFirst;
@@ -537,13 +764,13 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
     UIImage *inflatedImage = [[UIImage alloc] initWithCGImage:inflatedImageRef scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(inflatedImageRef);
     CGImageRelease(imageRef);
-
+    
     return inflatedImage;
 }
 #endif
 
 
-@implementation AFImageResponseSerializer
+@implementation AFImageSerializer
 
 - (instancetype)init {
     self = [super init];
@@ -571,7 +798,7 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
     return _acceptablePathExtension;
 }
 
-#pragma mark - AFURLResponseSerializer
+#pragma mark -
 
 - (id)responseObjectForResponse:(NSURLResponse *)response
                            data:(NSData *)data
@@ -611,7 +838,7 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
     self.imageScale = [aDecoder decodeFloatForKey:@"imageScale"];
     self.automaticallyInflatesResponseImage = [aDecoder decodeBoolForKey:@"automaticallyInflatesResponseImage"];
 #endif
-
+    
     return self;
 }
 
@@ -627,13 +854,13 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFImageResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
+    AFImageSerializer *serializer = [[[self class] allocWithZone:zone] init];
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     serializer.imageScale = self.imageScale;
     serializer.automaticallyInflatesResponseImage = self.automaticallyInflatesResponseImage;
 #endif
-
+    
     return serializer;
 }
 
@@ -641,14 +868,14 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
 
 #pragma mark -
 
-@interface AFCompoundResponseSerializer ()
+@interface AFCompoundSerializer ()
 @property (readwrite, nonatomic, strong) NSArray *responseSerializers;
 @end
 
-@implementation AFCompoundResponseSerializer
+@implementation AFCompoundSerializer
 
 + (instancetype)compoundSerializerWithResponseSerializers:(NSArray *)responseSerializers {
-    AFCompoundResponseSerializer *serializer = [[self alloc] init];
+    AFCompoundSerializer *serializer = [[self alloc] init];
     serializer.responseSerializers = responseSerializers;
 
     return serializer;
@@ -661,44 +888,17 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
                           error:(NSError *__autoreleasing *)error
 {
     for (id serializer in self.responseSerializers) {
-        if (![serializer isKindOfClass:[AFHTTPResponseSerializer class]]) {
+        if (![serializer isKindOfClass:[AFHTTPSerializer class]]) {
             continue;
         }
 
-        if ([(AFHTTPResponseSerializer *)serializer validateResponse:(NSHTTPURLResponse *)response data:data error:nil]) {
+        if ([(AFHTTPSerializer *)serializer validateResponse:(NSHTTPURLResponse *)response data:data error:nil]) {
             return [serializer responseObjectForResponse:response data:data error:error];
         }
     }
-    
+
     return [super responseObjectForResponse:response data:data error:error];
 }
 
-#pragma mark - NSCoding
-
-- (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return nil;
-    }
-
-    self.responseSerializers = [aDecoder decodeObjectForKey:@"responseSerializers"];
-
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder {
-    [super encodeWithCoder:aCoder];
-
-    [aCoder encodeObject:self.responseSerializers forKey:@"responseSerializers"];
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone {
-    AFCompoundResponseSerializer *serializer = [[[self class] allocWithZone:zone] init];
-    serializer.responseSerializers = self.responseSerializers;
-
-    return serializer;
-}
 
 @end

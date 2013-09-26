@@ -59,21 +59,21 @@
         return nil;
     }
 
-    self.responseSerializer = [AFPropertyListResponseSerializer serializerWithFormat:NSPropertyListXMLFormat_v1_0 readOptions:NSPropertyListImmutable];
+    self.responseSerializer = [AFPropertyListSerializer serializerWithFormat:NSPropertyListXMLFormat_v1_0 readOptions:NSPropertyListImmutable writeOptions:0];
 
     return self;
 }
 
-#pragma mark - AFPropertyListRequestOperation
+#pragma mark AFPropertyListRequestOperation
 
 - (NSPropertyListReadOptions)propertyListReadOptions {
-    return [(AFPropertyListResponseSerializer *)self.responseSerializer readOptions];
+    return [(AFPropertyListSerializer *)self.responseSerializer readOptions];
 }
 
 - (void)setPropertyListReadOptions:(NSPropertyListReadOptions)propertyListReadOptions {
     [self.lock lock];
     if (self.propertyListReadOptions != propertyListReadOptions) {
-        [(AFPropertyListResponseSerializer *)self.responseSerializer setReadOptions:propertyListReadOptions];
+        [(AFPropertyListSerializer *)self.responseSerializer setReadOptions:propertyListReadOptions];
 
         self.responsePropertyList = nil;
     }

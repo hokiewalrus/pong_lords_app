@@ -279,6 +279,6 @@ extern NSString * const AFEventSourceErrorDomain;
 
  By default, `AFServerSentEventSerializer` accepts responses with a MIME type of `text/event-stream`. 
  */
-@interface AFServerSentEventResponseSerializer : AFHTTPResponseSerializer
+@interface AFServerSentEventSerializer : AFHTTPSerializer
 
 @end

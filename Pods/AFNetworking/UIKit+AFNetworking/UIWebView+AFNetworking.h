@@ -1,4 +1,4 @@
-// AFSecurity.h
+// UIWebView+AFNetworking.h
 //
 // Copyright (c) 2013 AFNetworking (http://afnetworking.com)
 //
@@ -20,55 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#import <Security/Security.h>
+#import <UIKit/UIKit.h>
 
 /**
  
  */
-typedef NS_ENUM(NSUInteger, AFSSLPinningMode) {
-    AFSSLPinningModeNone,
-    AFSSLPinningModePublicKey,
-    AFSSLPinningModeCertificate,
-};
+@interface UIWebView (AFNetworking)
 
 /**
  
  */
-@interface AFSecurityPolicy : NSObject
-
-/**
- 
- */
-@property (nonatomic, assign) AFSSLPinningMode SSLPinningMode;
-
-/**
- 
- */
-@property (nonatomic, strong) NSArray *pinnedCertificates;
-
-/**
- 
- */
-@property (nonatomic, assign) BOOL allowInvalidCertificates;
-
-///
-
-/**
- 
- */
-+ (instancetype)defaultPolicy;
-
-/**
- 
- */
-+ (instancetype)debugPolicy;
-
-///
-
-/**
- 
- */
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust;
+- (void)loadRequest:(NSURLRequest *)request
+           progress:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+            success:(NSString * (^)(NSHTTPURLResponse *response, NSString *HTML))success
+            failure:(void (^)(NSError *error))failure;
 
 @end

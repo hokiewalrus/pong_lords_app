@@ -27,7 +27,7 @@
 @interface AFXMLRequestOperation ()
 @property (readwrite, nonatomic, strong) NSXMLParser *responseXMLParser;
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-@property (readwrite, nonatomic, strong) AFXMLDocumentResponseSerializer *XMLDocumentSerializer;
+@property (readwrite, nonatomic, strong) AFXMLDocumentSerializer *XMLDocumentSerializer;
 @property (readwrite, nonatomic, strong) NSXMLDocument *responseXMLDocument;
 #endif
 @property (readwrite, nonatomic, strong) NSError *error;
@@ -84,10 +84,10 @@
         return nil;
     }
 
-    self.responseSerializer = [AFXMLParserResponseSerializer serializer];
+    self.responseSerializer = [AFXMLParserSerializer serializer];
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-    self.XMLDocumentSerializer = [AFXMLDocumentResponseSerializer serializer];
+    self.XMLDocumentSerializer = [AFXMLDocumentSerializer serializer];
 #endif
 
     return self;
