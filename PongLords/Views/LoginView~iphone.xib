@@ -6,6 +6,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController">
             <connections>
+                <outlet property="emailField" destination="3wP-mn-6QU" id="555-Z4-A5f"/>
+                <outlet property="forgotPasswordButton" destination="WVi-hd-rep" id="Qsg-Xf-SVa"/>
+                <outlet property="passwordField" destination="u8O-w1-KY1" id="SI3-AQ-68v"/>
+                <outlet property="submitButton" destination="66t-wf-mK6" id="oDe-fo-8P8"/>
                 <outlet property="view" destination="1" id="RZc-6v-fFU"/>
             </connections>
         </placeholder>
@@ -47,39 +51,35 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="45" id="uhW-kH-dvw"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
                     <state key="normal" title="SUBMIT" backgroundImage="ButtonSubmit">
                         <color key="titleColor" red="0.97254901960784312" green="0.95686274509803926" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
-                    <state key="highlighted" backgroundImage="ButtonSubmit">
-                        <color key="titleColor" red="0.97254901959999995" green="0.95686274510000002" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
-                    </state>
+                    <state key="highlighted" backgroundImage="ButtonSubmit"/>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BjP-RA-vT7">
-                    <rect key="frame" x="35" y="489" width="250" height="45"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WVi-hd-rep">
+                    <rect key="frame" x="90" y="343" width="140" height="35"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="45" id="gJv-0p-7lm"/>
+                        <constraint firstAttribute="width" constant="140" id="AfX-Jd-Fgx"/>
+                        <constraint firstAttribute="height" constant="35" id="VOM-vh-EWw"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                    <state key="normal" title="REGISTER" backgroundImage="ButtonToggle">
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="Forgot Password">
                         <color key="titleColor" red="0.97254901959999995" green="0.95686274510000002" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
             </subviews>
             <color key="backgroundColor" red="0.92941176470588238" green="0.27843137254901962" blue="0.23921568627450981" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="u8O-w1-KY1" firstAttribute="leading" secondItem="3wP-mn-6QU" secondAttribute="leading" id="0ip-AC-2U8"/>
-                <constraint firstItem="BjP-RA-vT7" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="35" id="1gu-uO-wvc"/>
+                <constraint firstItem="WVi-hd-rep" firstAttribute="top" secondItem="66t-wf-mK6" secondAttribute="bottom" constant="8" id="6df-mB-HDn"/>
                 <constraint firstAttribute="centerX" secondItem="1aL-b1-PWi" secondAttribute="centerX" id="9oH-g9-lnV"/>
                 <constraint firstAttribute="trailing" secondItem="3wP-mn-6QU" secondAttribute="trailing" constant="35" id="E6p-Gz-hlO"/>
-                <constraint firstAttribute="trailing" secondItem="BjP-RA-vT7" secondAttribute="trailing" constant="35" id="Geg-7C-iAk"/>
                 <constraint firstItem="66t-wf-mK6" firstAttribute="leading" secondItem="3wP-mn-6QU" secondAttribute="leading" id="KMR-Vm-veG"/>
                 <constraint firstItem="3wP-mn-6QU" firstAttribute="top" secondItem="1" secondAttribute="top" constant="170" id="O3N-3S-Rn0"/>
                 <constraint firstItem="u8O-w1-KY1" firstAttribute="top" secondItem="3wP-mn-6QU" secondAttribute="bottom" constant="15" id="SAK-t4-G4A"/>
-                <constraint firstAttribute="bottom" secondItem="BjP-RA-vT7" secondAttribute="bottom" constant="34" id="jch-qm-Wik"/>
+                <constraint firstAttribute="centerX" secondItem="WVi-hd-rep" secondAttribute="centerX" id="TNO-C8-dIH"/>
                 <constraint firstItem="66t-wf-mK6" firstAttribute="top" secondItem="u8O-w1-KY1" secondAttribute="bottom" constant="15" id="juc-dc-SVY"/>
                 <constraint firstItem="u8O-w1-KY1" firstAttribute="trailing" secondItem="3wP-mn-6QU" secondAttribute="trailing" id="l2v-fC-gLu"/>
                 <constraint firstItem="66t-wf-mK6" firstAttribute="trailing" secondItem="3wP-mn-6QU" secondAttribute="trailing" id="obq-fd-6K5"/>
@@ -92,10 +92,7 @@
     </objects>
     <resources>
         <image name="ButtonSubmit" width="2" height="45"/>
-        <image name="ButtonSubmit" width="2" height="45"/>
-        <image name="ButtonToggle" width="2" height="45"/>
         <image name="LogoLogIn" width="120" height="47"/>
-        <image name="TextfieldBG" width="2" height="45"/>
         <image name="TextfieldBG" width="2" height="45"/>
     </resources>
 </document>
