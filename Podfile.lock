@@ -1,21 +1,36 @@
 PODS:
-  - AFNetworking (2.0.0-RC2):
-    - AFNetworking/Core
-    - AFNetworking/UIKit+AFNetworking
-  - AFNetworking/Core (2.0.0-RC2)
-  - AFNetworking/UIKit+AFNetworking (2.0.0-RC2)
+  - AFNetworking (2.0.0):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+    - AFNetworking/UIKit
+  - AFNetworking/NSURLConnection (2.0.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.0.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.0.0)
+  - AFNetworking/Security (2.0.0)
+  - AFNetworking/Serialization (2.0.0)
+  - AFNetworking/UIKit (2.0.0):
+    - AFNetworking/NSURLConnection
   - Mixpanel (2.0.2)
   - SSKeychain (1.2.1)
   - TestFlightSDK (2.0)
 
 DEPENDENCIES:
-  - AFNetworking (= 2.0.0-RC2)
+  - AFNetworking
   - Mixpanel
   - SSKeychain
   - TestFlightSDK
 
 SPEC CHECKSUMS:
-  AFNetworking: 6b19d8a0793f342d8c879cd0af9d7488e54addcf
+  AFNetworking: 3fa983b1beaba69566a3374612511e2a6e3fe845
   Mixpanel: 7829ba2cc58d251a4674520109e9bfead76acc98
   SSKeychain: d18926838c2e7cd342e2a49e9f869858e49f035a
   TestFlightSDK: 940906d4b2550cf397c6f2d2fcc4ebfdcd8ae858

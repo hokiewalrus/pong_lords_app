@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0501280117D6D55000182923 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 0501280017D6D55000182923 /* Constants.m */; };
-		0501280417D6D85200182923 /* PongLordsAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0501280317D6D85200182923 /* PongLordsAPIClient.m */; };
 		0501280717D6DA9600182923 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0501280617D6DA9600182923 /* ProfileViewController.m */; };
 		0527C1C017D6CC64007ABA3F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0527C1BF17D6CC64007ABA3F /* Foundation.framework */; };
 		0527C1C217D6CC64007ABA3F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0527C1C117D6CC64007ABA3F /* CoreGraphics.framework */; };
@@ -43,8 +42,6 @@
 /* Begin PBXFileReference section */
 		050127FF17D6D55000182923 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		0501280017D6D55000182923 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
-		0501280217D6D85200182923 /* PongLordsAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PongLordsAPIClient.h; sourceTree = "<group>"; };
-		0501280317D6D85200182923 /* PongLordsAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PongLordsAPIClient.m; sourceTree = "<group>"; };
 		0501280517D6DA9600182923 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		0501280617D6DA9600182923 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		0527C1BC17D6CC64007ABA3F /* PongLords.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PongLords.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -172,8 +169,6 @@
 				050127FE17D6D4E400182923 /* Models */,
 				0527C1CE17D6CC64007ABA3F /* AppDelegate.h */,
 				0527C1CF17D6CC64007ABA3F /* AppDelegate.m */,
-				0501280217D6D85200182923 /* PongLordsAPIClient.h */,
-				0501280317D6D85200182923 /* PongLordsAPIClient.m */,
 				050127FF17D6D55000182923 /* Constants.h */,
 				0501280017D6D55000182923 /* Constants.m */,
 				0527C1D117D6CC64007ABA3F /* Images.xcassets */,
@@ -359,7 +354,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0501280417D6D85200182923 /* PongLordsAPIClient.m in Sources */,
 				05FD498917F4AC3B00CB4A6A /* TournamentViewController.m in Sources */,
 				0527C1D017D6CC64007ABA3F /* AppDelegate.m in Sources */,
 				05FD498617F4AC1F00CB4A6A /* GameViewController.m in Sources */,
