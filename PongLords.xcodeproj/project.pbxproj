@@ -21,6 +21,8 @@
 		0527C1DB17D6CC64007ABA3F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0527C1C317D6CC64007ABA3F /* UIKit.framework */; };
 		0527C1E317D6CC64007ABA3F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0527C1E117D6CC64007ABA3F /* InfoPlist.strings */; };
 		0527C1E517D6CC64007ABA3F /* PongLordsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0527C1E417D6CC64007ABA3F /* PongLordsTests.m */; };
+		0555C99717FA0751004C709F /* PongLordsSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0555C99617FA0751004C709F /* PongLordsSessionManager.m */; };
+		0555C99A17FA0F9D004C709F /* JSONConstructor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0555C99917FA0F9D004C709F /* JSONConstructor.m */; };
 		0564F03B17F3873A005956A3 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0564F03A17F3873A005956A3 /* LoginViewController.m */; };
 		0564F03F17F3881F005956A3 /* LoginView~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0564F03E17F3881F005956A3 /* LoginView~iphone.xib */; };
 		0571EB7D17D83404003994A7 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0571EB7C17D83404003994A7 /* Crashlytics.framework */; };
@@ -60,6 +62,10 @@
 		0527C1E017D6CC64007ABA3F /* PongLordsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PongLordsTests-Info.plist"; sourceTree = "<group>"; };
 		0527C1E217D6CC64007ABA3F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0527C1E417D6CC64007ABA3F /* PongLordsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PongLordsTests.m; sourceTree = "<group>"; };
+		0555C99517FA0751004C709F /* PongLordsSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PongLordsSessionManager.h; sourceTree = "<group>"; };
+		0555C99617FA0751004C709F /* PongLordsSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PongLordsSessionManager.m; sourceTree = "<group>"; };
+		0555C99817FA0F9D004C709F /* JSONConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONConstructor.h; sourceTree = "<group>"; };
+		0555C99917FA0F9D004C709F /* JSONConstructor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONConstructor.m; sourceTree = "<group>"; };
 		0564F03917F3873A005956A3 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		0564F03A17F3873A005956A3 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		0564F03E17F3881F005956A3 /* LoginView~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "LoginView~iphone.xib"; sourceTree = "<group>"; };
@@ -124,6 +130,10 @@
 		050127FE17D6D4E400182923 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0555C99517FA0751004C709F /* PongLordsSessionManager.h */,
+				0555C99617FA0751004C709F /* PongLordsSessionManager.m */,
+				0555C99817FA0F9D004C709F /* JSONConstructor.h */,
+				0555C99917FA0F9D004C709F /* JSONConstructor.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -357,6 +367,8 @@
 				05FD498917F4AC3B00CB4A6A /* TournamentViewController.m in Sources */,
 				0527C1D017D6CC64007ABA3F /* AppDelegate.m in Sources */,
 				05FD498617F4AC1F00CB4A6A /* GameViewController.m in Sources */,
+				0555C99717FA0751004C709F /* PongLordsSessionManager.m in Sources */,
+				0555C99A17FA0F9D004C709F /* JSONConstructor.m in Sources */,
 				0564F03B17F3873A005956A3 /* LoginViewController.m in Sources */,
 				0527C1CC17D6CC64007ABA3F /* main.m in Sources */,
 				0501280117D6D55000182923 /* Constants.m in Sources */,

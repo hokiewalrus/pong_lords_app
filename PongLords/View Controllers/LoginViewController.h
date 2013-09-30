@@ -15,4 +15,6 @@
 @property (nonatomic, weak) IBOutlet UIButton *submitButton;
 @property (nonatomic, weak) IBOutlet UIButton *forgotPasswordButton;
 
+- (IBAction)submitButtonPressed:(id)sender;
+
 @end

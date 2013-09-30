@@ -56,6 +56,9 @@
                         <color key="titleColor" red="0.97254901960784312" green="0.95686274509803926" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <state key="highlighted" backgroundImage="ButtonSubmit"/>
+                    <connections>
+                        <action selector="submitButtonPressed:" destination="-1" eventType="touchUpInside" id="OG1-0B-b5O"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WVi-hd-rep">
                     <rect key="frame" x="90" y="343" width="140" height="35"/>
