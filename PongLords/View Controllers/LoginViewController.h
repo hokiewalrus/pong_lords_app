@@ -8,8 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol LoginViewDelegate <NSObject>
+
+- (void)dismissLogin;
+
+@end
+
 @interface LoginViewController : UIViewController
 
+@property (nonatomic, weak) id <LoginViewDelegate> delegate;
 @property (nonatomic, weak) IBOutlet UITextField *emailField;
 @property (nonatomic, weak) IBOutlet UITextField *passwordField;
 @property (nonatomic, weak) IBOutlet UIButton *submitButton;

@@ -46,6 +46,7 @@
     parameters:[JSONConstructor constructPlayerJSONWithEmail:email andPassword:password]
        success:^(AFHTTPRequestOperation *operation, id responseObject) {
            DLog(@"%@", responseObject);
+           [[NSNotificationCenter defaultCenter] postNotificationName:kLoggedInNotification object:nil];
        }
        failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
 }

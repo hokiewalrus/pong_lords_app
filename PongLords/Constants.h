@@ -12,4 +12,6 @@
 
 extern NSString *const kBaseURLString;
 
+extern NSString *const kLoggedInNotification;
+
 @end

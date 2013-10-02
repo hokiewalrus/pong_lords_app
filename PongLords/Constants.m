@@ -12,4 +12,6 @@
 
 NSString *const kBaseURLString = @"http://staging.ponglords.com";
 
+NSString *const kLoggedInNotification = @"LoggedInNotification";
+
 @end

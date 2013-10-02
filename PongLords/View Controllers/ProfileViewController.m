@@ -7,9 +7,10 @@
 //
 
 #import "ProfileViewController.h"
-#import "LoginViewController.h"
 
 @interface ProfileViewController ()
+
+@property (nonatomic) BOOL shouldLoad;
 
 @end
 
@@ -32,6 +33,7 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    self.shouldLoad = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -46,13 +48,24 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Login View Delegate
+
+- (void)dismissLogin {
+    
+    self.shouldLoad = NO;
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Private Methods
 
 - (void)checkAndLoadModal {
     
-    LoginViewController *login = [[LoginViewController alloc] init];
-    [login setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
-    [self presentViewController:login animated:YES completion:nil];
+    if (self.shouldLoad) {
+        LoginViewController *login = [[LoginViewController alloc] init];
+        [login setDelegate:self];
+        [login setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
+        [self presentViewController:login animated:YES completion:nil];
+    }
 }
 
 @end

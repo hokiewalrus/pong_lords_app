@@ -48,6 +48,11 @@
     [self.forgotPasswordButton setAttributedTitle:[[NSAttributedString alloc] initWithString:NSLocalizedString(@"Forgot Password", nil)
                                                                                   attributes:@{NSUnderlineStyleAttributeName:@1, NSForegroundColorAttributeName: buttonTextColor}]
                                          forState:UIControlStateNormal];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(loggedIn)
+                                                 name:kLoggedInNotification
+                                               object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -63,6 +68,15 @@
     [self.emailField resignFirstResponder];
     [self.passwordField resignFirstResponder];
     [[PongLordsSessionManager sharedInstance] loginWithEmail:self.emailField.text andPassword:self.passwordField.text];
+}
+
+#pragma mark - Private Methods
+
+- (void)loggedIn {
+    
+    if ([self.delegate respondsToSelector:@selector(dismissLogin)]) {
+        [self.delegate dismissLogin];
+    }
 }
 
 @end
