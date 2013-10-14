@@ -8,6 +8,8 @@
 
 #import "PongLordsSessionManager.h"
 #import "JSONConstructor.h"
+#import "Player.h"
+#import "CurrentPlayer.h"
 
 @implementation PongLordsSessionManager
 
@@ -38,7 +40,7 @@
     return self;
 }
 
-#pragma marl - Public Methods
+#pragma mark - Public Methods
 
 - (void)loginWithEmail:(NSString *)email andPassword:(NSString *)password {
     
@@ -46,9 +48,18 @@
     parameters:[JSONConstructor constructPlayerJSONWithEmail:email andPassword:password]
        success:^(AFHTTPRequestOperation *operation, id responseObject) {
            DLog(@"%@", responseObject);
-           [[NSNotificationCenter defaultCenter] postNotificationName:kLoggedInNotification object:nil];
+           NSDictionary *playerDict = responseObject[@"player"];
+           Player *newPlayer = [[Player alloc] init];
+           newPlayer.firstName = playerDict[@"first_name"];
+           newPlayer.lastName = playerDict[@"last_name"];
+           newPlayer.nickname = playerDict[@"nickname"];
+           if ([[CurrentPlayer sharedInstance] logInWithPlayer:newPlayer]) {
+               [[NSNotificationCenter defaultCenter] postNotificationName:kLoggedInNotification object:nil];
+           }
        }
-       failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
+       failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+           DLog(@"Error %i", error.code);
+       }];
 }
 
 @end
