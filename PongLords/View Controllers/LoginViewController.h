@@ -14,7 +14,7 @@
 
 @end
 
-@interface LoginViewController : UIViewController
+@interface LoginViewController : UIViewController <UITextFieldDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <LoginViewDelegate> delegate;
 @property (nonatomic, weak) IBOutlet UITextField *emailField;
