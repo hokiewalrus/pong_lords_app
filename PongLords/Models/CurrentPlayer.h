@@ -11,6 +11,8 @@
 
 @interface CurrentPlayer : Player
 
+@property (nonatomic) NSArray *recentPlayers;
+
 + (CurrentPlayer *)sharedInstance;
 
 - (BOOL)logInWithPlayer:(Player *)newPlayer;

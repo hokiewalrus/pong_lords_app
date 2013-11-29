@@ -7,8 +7,11 @@
 //
 
 #import "GameViewController.h"
+#import "CurrentPlayer.h"
 
-@interface GameViewController ()
+@interface GameViewController () <UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic) UITableView *tableView;
 
 @end
 
@@ -24,16 +27,38 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+    
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+	[self.tableView setDataSource:self];
+    [self.tableView setDelegate:self];
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
+    
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - TableView Delegate
+
+#pragma mark - TableView Data Source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return [[[CurrentPlayer sharedInstance] recentPlayers] count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewCell *cell;
+    
+    return cell;
 }
 
 @end

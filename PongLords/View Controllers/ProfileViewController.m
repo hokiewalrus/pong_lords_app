@@ -39,7 +39,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
-    [self checkAndLoadModal];
+    // [self checkAndLoadModal];
 }
 
 - (void)didReceiveMemoryWarning {

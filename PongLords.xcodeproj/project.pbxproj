@@ -25,7 +25,6 @@
 		0555C99A17FA0F9D004C709F /* JSONConstructor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0555C99917FA0F9D004C709F /* JSONConstructor.m */; };
 		0564F03B17F3873A005956A3 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0564F03A17F3873A005956A3 /* LoginViewController.m */; };
 		0564F03F17F3881F005956A3 /* LoginView~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0564F03E17F3881F005956A3 /* LoginView~iphone.xib */; };
-		0571EB7D17D83404003994A7 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0571EB7C17D83404003994A7 /* Crashlytics.framework */; };
 		05FA5C37180C915E00CD83CF /* CurrentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA5C36180C915E00CD83CF /* CurrentPlayer.m */; };
 		05FA5C3A180C92E300CD83CF /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA5C39180C92E300CD83CF /* Player.m */; };
 		05FD498617F4AC1F00CB4A6A /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FD498517F4AC1F00CB4A6A /* GameViewController.m */; };
@@ -71,7 +70,6 @@
 		0564F03917F3873A005956A3 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		0564F03A17F3873A005956A3 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		0564F03E17F3881F005956A3 /* LoginView~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "LoginView~iphone.xib"; sourceTree = "<group>"; };
-		0571EB7C17D83404003994A7 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		05A298EA77724FA5BAA50E93 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		05FA5C35180C915E00CD83CF /* CurrentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentPlayer.h; sourceTree = "<group>"; };
 		05FA5C36180C915E00CD83CF /* CurrentPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrentPlayer.m; sourceTree = "<group>"; };
@@ -90,7 +88,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0527C1C217D6CC64007ABA3F /* CoreGraphics.framework in Frameworks */,
-				0571EB7D17D83404003994A7 /* Crashlytics.framework in Frameworks */,
 				0527C1C417D6CC64007ABA3F /* UIKit.framework in Frameworks */,
 				0527C1C017D6CC64007ABA3F /* Foundation.framework in Frameworks */,
 				17DED94E063B4BDCB45DC78B /* libPods.a in Frameworks */,
@@ -171,7 +168,6 @@
 		0527C1BE17D6CC64007ABA3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0571EB7C17D83404003994A7 /* Crashlytics.framework */,
 				0527C1BF17D6CC64007ABA3F /* Foundation.framework */,
 				0527C1C117D6CC64007ABA3F /* CoreGraphics.framework */,
 				0527C1C317D6CC64007ABA3F /* UIKit.framework */,
@@ -335,7 +331,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Crashlytics.framework/run 33a7a0d865f1f5ad096f48493e2916bd878e2ec6";
+			shellScript = "";
 		};
 		1CFDF6C57CE74EF6B51DBBFA /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -505,7 +501,7 @@
 				CODE_SIGN_IDENTITY = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/hokiewalrus/Dropbox/Hypercube/Apps/PongLords,
+					"$(SRCROOT)/PongLords",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PongLords/PongLords-Prefix.pch";
@@ -526,7 +522,7 @@
 				CODE_SIGN_IDENTITY = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/hokiewalrus/Dropbox/Hypercube/Apps/PongLords,
+					"$(SRCROOT)/PongLords",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PongLords/PongLords-Prefix.pch";
